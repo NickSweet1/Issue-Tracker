@@ -10,7 +10,7 @@ const NavBar = () => {
 
     const link = [ //setting like array to our link paths and labels to avoid dupilcate code
         { label: 'Dashboard', href: '/'},
-        { label: 'Issues', href: '/issues'}
+        { label: 'Issues', href: '/issues/list'}
     ];
 
 
