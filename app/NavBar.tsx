@@ -15,14 +15,7 @@ import {
 } from "@radix-ui/themes";
 
 const NavBar = () => {
-  const currentPath = usePathname();
-  const { status, data: session } = useSession();
 
-  const link = [
-    //setting like array to our link paths and labels to avoid dupilcate code
-    { label: "Dashboard", href: "/" },
-    { label: "Issues", href: "/issues/list" },
-  ];
 
   return (
     <nav className="border-b mb-5 px-5 py-3">
@@ -32,16 +25,35 @@ const NavBar = () => {
             <Link href="/">
               <PiBugBeetleBold />
             </Link>
-            <ul className="flex space-x-6">
+            <NavLinks />
+          </Flex> 
+          <AuthStatus />      
+        </Flex>
+      </Container>
+    </nav>
+  );
+};
+
+const NavLinks = () => {
+  const currentPath = usePathname();
+  
+
+  const link = [
+    //setting like array to our link paths and labels to avoid dupilcate code
+    { label: "Dashboard", href: "/" },
+    { label: "Issues", href: "/issues/list" },
+  ];
+
+  return (
+    <ul className="flex space-x-6">
               {/* rendering the navbar compents by mapping through the link array */}
               {link.map((link) => (
                 <li key={link.href}>
                   <Link
                     // using classnames library to create a function that returns a string of the classes to render
                     className={classnames({
-                      "text-zinc-900": link.href === currentPath,
-                      "text-zinc-500": link.href !== currentPath,
-                      "hover:text-zinc-900 transition-colors": true,
+                      "nav-link": true,
+                      "!text-zinc-900": link.href === currentPath,
                     })}
                     href={link.href}
                   >
@@ -50,13 +62,22 @@ const NavBar = () => {
                 </li>
               ))}
             </ul>
-          </Flex>
-          <Box>
-            {status === "authenticated" && (
+  )
+}
+const AuthStatus = () => {
+  const { status, data: session } = useSession();
+
+  if (status === "loading") return null;
+
+  if (status === "unauthenticated") 
+     return <Link className="nav-link" href="/api/auth/signin">Sign in</Link>
+
+  return (
+    <Box>
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
                   <Avatar
-                    src={session.user!.image!}
+                    src={session!.user!.image!}
                     fallback="?"
                     size="2"
                     radius="full"
@@ -66,22 +87,15 @@ const NavBar = () => {
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                   <DropdownMenu.Label>
-                    <Text>{session.user!.email}</Text>
+                    <Text>{session!.user!.email}</Text>
                   </DropdownMenu.Label>
                   <DropdownMenu.Item>
                     <Link href="/api/auth/signout">Log out</Link>
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
-            )}
-            {status === "unauthenticated" && (
-              <Link href="/api/auth/signin">Sign in</Link>
-            )}
           </Box>
-        </Flex>
-      </Container>
-    </nav>
-  );
-};
+  )
+}
 
 export default NavBar;
